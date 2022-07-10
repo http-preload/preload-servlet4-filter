@@ -1,0 +1,86 @@
+{
+  "$schema": "https://json-schema.org/draft-07/schema",
+  "$id": "https://127.0.0.1:8443/server/preload-v2.schema.json",
+  "title": "PreloadManifest",
+  "description": "Preload Manifest File Schema",
+  "type": "object",
+  "properties": {
+    "manifestVersion": {
+      "type": "integer",
+      "enum": [1]
+    },
+    "conditions": {
+      "patternProperties": {
+        "^[a-zA-Z_$][\\w$]*$": {
+          "type": "string"
+        }
+      }
+    },
+    "resources": {
+      "type": "object",
+      "patternProperties": {
+        "^\/\\S*( +[a-zA_Z_$][\\w$]*)?$": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "rel": {
+                "type": "string",
+                "examples": ["preload","modulepreload","dns-prefetch","prefetch","preconnect","prerender"]
+              },
+              "href": {
+                "type": "string",
+                "format": "uri-reference"
+              },
+              "hreflang": {
+                "type": "string"
+              },
+              "as": {
+                "type": "string",
+                "enum": ["audio","document","embed","fetch","font","image","object","script","style","track","video","worker"]
+              },
+              "crossorigin": {
+                "type": "string",
+                "enum": ["anonymous","use-credentials"]
+              },
+              "fetchpriority": {
+                "type": "string",
+                "enum": ["high","low","auto"]
+              },
+              "type": {
+                "type": "string",
+                "pattern": "[a-z]+/[a-z0-9.+-](;\\s*([a-z][a-z0-9]=(\"?)[^\"]+)\\3?)*"
+              },
+              "referrerpolicy": {
+                "enum": ["no-referrer","no-referrer-when-downgrade","origin","origin-when-cross-origin","unsafe-url"]
+              },
+              "integrity": {
+                "type": "string"
+              }
+            },
+            "required": ["rel", "href"],
+            "dependencies": {
+              "as": {
+                "properties": {
+                   "rel": {"enum": ["preload","prefetch"]}
+                }
+              },
+              "hreflang": ["href"]
+            },
+            "patternProperties": {
+              "^[a-z]+$": {
+                "type": "string"
+              }
+            },
+            "additionalProperties": false
+          }
+        }
+      },
+      "additionalProperties": false
+    }
+  },
+  "required": [
+    "manifestVersion",
+    "resources"
+  ]
+}
